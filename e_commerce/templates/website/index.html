@@ -1,0 +1,86 @@
+{% extends 'website/common/base.html' %}
+{%block main_content %}
+<h1>Welcome to E-Commerce Website,discover wide range of products!</h1>
+<header class="bg-dark text-white text-center py-4">
+        <div class="container">
+            <h1 class="display-4">Our Products</h1>
+            
+            <p class="lead">Check out our amazing selection!</p>
+        </div>
+    </header>
+
+    <main class="container my-5">
+       
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+             {% for Product in products %}
+            <div style="width: 200px; height: 97px; border: 2px solid; margin: 10px;">
+                {{ Product.name }}<br>
+                {{ Product.description }}<br>
+                {{ Product.price }}
+            </div>
+            {% endfor %}
+            
+
+             
+    </main>
+    <footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p>&copy; 2024 Our Products. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+{% endblock %}
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-img-top {
+            height: 200px; /* Adjust image height as needed */
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+     <h1>{{ products }}</h1> -->
+    
+        
+           
+    <!-- <header class="bg-dark text-white text-center py-4">
+        <div class="container">
+            <h1 class="display-4">Our Products</h1>
+            
+            <p class="lead">Check out our amazing selection!</p>
+        </div>
+    </header>
+
+    <main class="container my-5">
+       
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+             {% for Product in products %}
+            <div style="width: 200px; height: 97px; border: 2px solid; margin: 10px;">
+                {{ Product.name }}<br>
+                {{ Product.description }}<br>
+                {{ Product.price }}
+            </div>
+            {% endfor %}
+            
+
+             
+    </main>
+
+    <footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p>&copy; 2024 Our Products. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> --> 
+
+
+
