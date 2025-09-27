@@ -1,7 +1,7 @@
 import django.db.models as model
 from django.contrib.auth.models import AbstractUser
 
-class authuser(AbstractUser):   # <-- Check the exact spelling/capitalization
+class Authuser(AbstractUser):   # <-- Check the exact spelling/capitalization
     # any extra fields
     pass
 
