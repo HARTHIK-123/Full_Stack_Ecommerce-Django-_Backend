@@ -12,7 +12,7 @@ class Products(model.Model):
     def __str__(self):
         return self.name
     
-class AuthUser(AbstractUser):
+class Authuser(AbstractUser):
     # inherts all fields of AbstractUser
     email = model.EmailField(unique=True)  # make email unique
     usename = model.CharField(max_length=150, unique=False)  # make username non-unique
