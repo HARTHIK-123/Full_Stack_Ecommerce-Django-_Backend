@@ -149,3 +149,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #     "http://127.0.0.1:3000",
 # ]
 CORS_ALLOW_ALL_ORIGINS = True
+
+import os
+
+# Directory where collectstatic will put all static files
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# URL to use when referring to static files
+STATIC_URL = "/static/"
+
+# Optional: if you use whitenoise for serving static files in production
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
