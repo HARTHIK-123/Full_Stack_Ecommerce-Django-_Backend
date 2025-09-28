@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('website/', include('website.urls')),    
     path('dashboard/', dashboard, name='dashboard'), 
-    path('website/api/', include('website.api.urls')),   
+    path('website/api/', include('website.api.urls')), 
+      path('accounts/', include('django.contrib.auth.urls')),  
     path('', RedirectView.as_view(url='website/')),
 
 ]
