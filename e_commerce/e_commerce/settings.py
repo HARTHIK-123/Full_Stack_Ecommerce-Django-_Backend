@@ -23,9 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-@3!ctb&9a!@%%$y(#w5$u+g6s%nh-rr*k&y@uu%e02*-s%py)b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'full-stack-ecommerce-django-backend.onrender.com',
+    'localhost',
+    '127.0.0.1'
+]
+
 
 
 # Application definition

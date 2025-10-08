@@ -81,54 +81,58 @@ def product_list(request, pk=None):
         return JsonResponse(products, safe=False)
 
     if request.method == "POST":
-        data = json.loads(request.body)
-        product = Products.objects.create(
-            name=data["name"], description=data["description"], price=data["price"]
-        )
-        return JsonResponse({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": product.price
-        }, status=201)
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+            product = Products.objects.create(
+                name=data["name"], description=data["description"], price=data["price"]
+            )
+            return JsonResponse({
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price": product.price
+            }, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
     if request.method == "PUT" and pk:
-        data = json.loads(request.body)
         try:
+            data = json.loads(request.body.decode("utf-8"))
             product = Products.objects.get(id=pk)
+            product.name = data.get("name", product.name)
+            product.description = data.get("description", product.description)
+            product.price = data.get("price", product.price)
+            product.save()
+            return JsonResponse({
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price": product.price
+            })
         except Products.DoesNotExist:
             return JsonResponse({"error": "Product not found"}, status=404)
-
-        product.name = data.get("name", product.name)
-        product.description = data.get("description", product.description)
-        product.price = data.get("price", product.price)
-        product.save()
-        return JsonResponse({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": product.price
-        })
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
     if request.method == "DELETE" and pk:
         try:
             product = Products.objects.get(id=pk)
+            product.delete()
+            return JsonResponse({"message": "Deleted"}, status=200)
         except Products.DoesNotExist:
             return JsonResponse({"error": "Product not found"}, status=404)
 
-        product.delete()
-        return JsonResponse({"message": "Deleted"}, status=204)
-
+    return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
 # ----------------- SIGNUP -----------------
 @csrf_exempt
 def signup(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode("utf-8"))
         username = data.get("username")
         password = data.get("password")
-        email = data.get("email")  # get email from request
+        email = data.get("email")
 
         if not username or not password or not email:
             return JsonResponse({"error": "Username, email and password required"}, status=400)
@@ -140,15 +144,21 @@ def signup(request):
             return JsonResponse({"error": "Email already in use!"}, status=400)
 
         user = User.objects.create_user(username=username, password=password, email=email)
-        return JsonResponse({"success": True, "message": "User created successfully!", "username": user.username, "email": user.email}, status=201)
+        return JsonResponse({
+            "success": True,
+            "message": "User created successfully!",
+            "username": user.username,
+            "email": user.email
+        }, status=201)
 
+    return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
 # ----------------- LOGIN -----------------
 @csrf_exempt
 def login_view(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode("utf-8"))
         username = data.get("username")
         password = data.get("password")
 
@@ -161,14 +171,13 @@ def login_view(request):
         else:
             return JsonResponse({"success": False, "message": "Invalid username or password"}, status=401)
 
+    return JsonResponse({"error": "Method not allowed"}, status=405)
+
 
 # -----------Users List----------
-
-User = get_user_model()
 @csrf_exempt
 def users_list(request):
     if request.method == "GET":
         users = list(User.objects.values("id", "username", "email"))
         return JsonResponse(users, safe=False)
-    else:
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+    return JsonResponse({"error": "Method not allowed"}, status=405)
