@@ -8,71 +8,111 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import json
 from rest_framework.response import Response
-
-
+from rest_framework import status
 
 # ----------------- PRODUCT CRUD -----------------
-@api_view(['GET'])
+# @api_view(['GET'])
+# def product_list(request, pk=None):
+#     print("Product API called")
+#     serialized = ProductSerializer(Products.objects.all(), many=True)
+#     # return http.JsonResponse(serialized.data, safe=False)
+#     return Response(serialized.data)
+#     if request.method == "GET":
+#         if pk:
+#             try:
+#                 product = Products.objects.get(id=pk)
+#                 return JsonResponse({
+#                     "id": product.id,
+#                     "name": product.name,
+#                     "description": product.description,
+#                     "price": product.price
+#                 })
+#             except Products.DoesNotExist:
+#                 return JsonResponse({"error": "Product not found"}, status=404)
+#         products = list(Products.objects.values("id", "name", "description", "price"))
+#         return JsonResponse(products, safe=False)
+
+#     if request.method == "POST":
+#         data = json.loads(request.body)
+#         product = Products.objects.create(
+#             name=data["name"], description=data["description"], price=data["price"]
+#         )
+#         return JsonResponse({
+#             "id": product.id,
+#             "name": product.name,
+#             "description": product.description,
+#             "price": product.price
+#         }, status=201)
+
+#     if request.method == "PUT" and pk:
+#         data = json.loads(request.body)
+#         try:
+#             product = Products.objects.get(id=pk)
+#         except Products.DoesNotExist:
+#             return JsonResponse({"error": "Product not found"}, status=404)
+
+#         product.name = data.get("name", product.name)
+#         product.description = data.get("description", product.description)
+#         product.price = data.get("price", product.price)
+#         product.save()
+#         return JsonResponse({
+#             "id": product.id,
+#             "name": product.name,
+#             "description": product.description,
+#             "price": product.price
+#         })
+
+#     if request.method == "DELETE" and pk:
+#         try:
+#             product = Products.objects.get(id=pk)
+#         except Products.DoesNotExist:
+#             return JsonResponse({"error": "Product not found"}, status=404)
+
+#         product.delete()
+#         return JsonResponse({"message": "Deleted"}, status=204)
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def product_list(request, pk=None):
-    print("Product API called")
-    serialized = ProductSerializer(Products.objects.all(), many=True)
-    # return http.JsonResponse(serialized.data, safe=False)
-    return Response(serialized.data)
-    if request.method == "GET":
+    if request.method == 'GET':
         if pk:
             try:
-                product = Products.objects.get(id=pk)
-                return JsonResponse({
-                    "id": product.id,
-                    "name": product.name,
-                    "description": product.description,
-                    "price": product.price
-                })
+                product = Products.objects.get(pk=pk)
+                serializer = ProductSerializer(product)
+                return Response(serializer.data)
             except Products.DoesNotExist:
-                return JsonResponse({"error": "Product not found"}, status=404)
-        products = list(Products.objects.values("id", "name", "description", "price"))
-        return JsonResponse(products, safe=False)
+                return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            products = Products.objects.all()
+            serializer = ProductSerializer(products, many=True)
+            return Response(serializer.data)
 
-    if request.method == "POST":
-        data = json.loads(request.body)
-        product = Products.objects.create(
-            name=data["name"], description=data["description"], price=data["price"]
-        )
-        return JsonResponse({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": product.price
-        }, status=201)
+    elif request.method == 'POST':
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == "PUT" and pk:
-        data = json.loads(request.body)
+    elif request.method == 'PUT' and pk:
         try:
-            product = Products.objects.get(id=pk)
+            product = Products.objects.get(pk=pk)
         except Products.DoesNotExist:
-            return JsonResponse({"error": "Product not found"}, status=404)
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        product.name = data.get("name", product.name)
-        product.description = data.get("description", product.description)
-        product.price = data.get("price", product.price)
-        product.save()
-        return JsonResponse({
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": product.price
-        })
+        serializer = ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if request.method == "DELETE" and pk:
+    elif request.method == 'DELETE' and pk:
         try:
-            product = Products.objects.get(id=pk)
+            product = Products.objects.get(pk=pk)
+            product.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Products.DoesNotExist:
-            return JsonResponse({"error": "Product not found"}, status=404)
-
-        product.delete()
-        return JsonResponse({"message": "Deleted"}, status=204)
-
-
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
 # ----------------- SIGNUP -----------------
 @csrf_exempt
